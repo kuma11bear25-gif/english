@@ -109,6 +109,18 @@ textarea:focus {
   outline-offset: -1px;
 }
 
+select#category-input {
+  width: 100%;
+  padding: 10px;
+  min-height: 44px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  font-size: 16px; /* iOSでフォーカス時に自動ズームされるのを防ぐ */
+  font-family: inherit;
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
 .button-row {
   display: flex;
   gap: 8px;
@@ -181,6 +193,30 @@ button:active {
   border-radius: var(--radius);
   padding: 12px 14px;
   box-shadow: var(--shadow);
+}
+
+.category-badge {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+  margin-bottom: 6px;
+}
+
+.category-daily {
+  background: #e3ecff;
+  color: var(--color-primary-dark);
+}
+
+.category-idiom {
+  background: #fdece3;
+  color: #b7501f;
+}
+
+.category-other {
+  background: #eceef2;
+  color: var(--color-text-muted);
 }
 
 .sentence-en {

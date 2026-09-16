@@ -33,8 +33,15 @@
       <label for="en-input">英語文章</label>
       <textarea id="en-input" placeholder="例: I go to school every day." rows="3" required></textarea>
 
-      <label for="ja-input">日本語訳（自動翻訳されます。手動で編集も可能です）</label>
+      <label for="ja-input">日本語訳（自動翻訳されます。会話表現を優先しますが、慣用句などは手動での調整をおすすめします）</label>
       <textarea id="ja-input" placeholder="翻訳結果がここに表示されます" rows="3"></textarea>
+
+      <label for="category-input">カテゴリ</label>
+      <select id="category-input">
+        <option value="daily">日常表現</option>
+        <option value="idiom">慣用句</option>
+        <option value="other">その他</option>
+      </select>
 
       <div class="button-row">
         <button type="button" id="translate-btn">日本語に翻訳</button>
@@ -47,6 +54,17 @@
   <!-- 一覧タブ -->
   <section id="tab-list" class="tab-panel">
     <h2>文章一覧</h2>
+    <div class="fc-controls">
+      <label>
+        カテゴリで絞り込み:
+        <select id="list-category-filter">
+          <option value="all">すべて</option>
+          <option value="daily">日常表現</option>
+          <option value="idiom">慣用句</option>
+          <option value="other">その他</option>
+        </select>
+      </label>
+    </div>
     <p id="list-empty" class="empty-msg">まだ文章が登録されていません。</p>
     <ul id="sentence-list" class="sentence-list"></ul>
   </section>
@@ -60,6 +78,15 @@
         <select id="fc-mode">
           <option value="en-ja">英語 → 日本語</option>
           <option value="ja-en">日本語 → 英語</option>
+        </select>
+      </label>
+      <label>
+        カテゴリ:
+        <select id="fc-category-filter">
+          <option value="all">すべて</option>
+          <option value="daily">日常表現</option>
+          <option value="idiom">慣用句</option>
+          <option value="other">その他</option>
         </select>
       </label>
       <button id="fc-shuffle">シャッフル</button>

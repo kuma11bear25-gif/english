@@ -1,3 +1,9 @@
+const CATEGORY_LABELS = {
+  daily: "日常表現",
+  idiom: "慣用句",
+  other: "その他",
+};
+
 document.addEventListener("DOMContentLoaded", () => {
   // ---- Service Worker登録（オフライン対応・ホーム画面追加用） ----
   if ("serviceWorker" in navigator) {
@@ -25,6 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // ---- 追加タブ ----
   const enInput = document.getElementById("en-input");
   const jaInput = document.getElementById("ja-input");
+  const categoryInput = document.getElementById("category-input");
   const translateBtn = document.getElementById("translate-btn");
   const addForm = document.getElementById("add-form");
   const addStatus = document.getElementById("add-status");
@@ -79,11 +86,13 @@ document.addEventListener("DOMContentLoaded", () => {
       id: Storage.makeId(),
       en,
       ja,
+      category: categoryInput.value,
       createdAt: Date.now(),
     });
 
     enInput.value = "";
     jaInput.value = "";
+    categoryInput.value = "daily";
     setStatus("保存しました！");
     setTimeout(() => setStatus(""), 2000);
   });
@@ -91,16 +100,28 @@ document.addEventListener("DOMContentLoaded", () => {
   // ---- 一覧タブ ----
   const listEl = document.getElementById("sentence-list");
   const listEmpty = document.getElementById("list-empty");
+  const listCategoryFilter = document.getElementById("list-category-filter");
+
+  listCategoryFilter.addEventListener("change", renderList);
 
   function renderList() {
-    const sentences = Storage.loadAll();
+    const filter = listCategoryFilter.value;
+    const sentences = Storage.loadAll().filter(
+      (s) => filter === "all" || (s.category || "other") === filter
+    );
     listEl.innerHTML = "";
     listEmpty.style.display = sentences.length ? "none" : "block";
+    listEmpty.textContent =
+      filter === "all"
+        ? "まだ文章が登録されていません。"
+        : "このカテゴリの文章はまだありません。";
 
     sentences.forEach((s) => {
+      const category = s.category || "other";
       const li = document.createElement("li");
       li.className = "sentence-card";
       li.innerHTML = `
+        <span class="category-badge category-${category}">${CATEGORY_LABELS[category]}</span>
         <p class="sentence-en">${escapeHtml(s.en)}</p>
         <p class="sentence-ja">${escapeHtml(s.ja || "（訳なし）")}</p>
         <div class="sentence-actions">
@@ -133,7 +154,11 @@ document.addEventListener("DOMContentLoaded", () => {
         if (newEn === null) return;
         const newJa = prompt("日本語訳を編集", s.ja || "");
         if (newJa === null) return;
-        Storage.update(s.id, { en: newEn.trim(), ja: newJa.trim() });
+        const categoryOptions = "daily=日常表現 / idiom=慣用句 / other=その他";
+        const newCategory = prompt(`カテゴリを編集 (${categoryOptions})`, category);
+        if (newCategory === null) return;
+        const normalizedCategory = CATEGORY_LABELS[newCategory.trim()] ? newCategory.trim() : category;
+        Storage.update(s.id, { en: newEn.trim(), ja: newJa.trim(), category: normalizedCategory });
         renderList();
       });
 
@@ -156,6 +181,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ---- フラッシュカードタブ ----
   const fcMode = document.getElementById("fc-mode");
+  const fcCategoryFilter = document.getElementById("fc-category-filter");
   const fcShuffleBtn = document.getElementById("fc-shuffle");
   const fcEmpty = document.getElementById("fc-empty");
   const fcArea = document.getElementById("fc-area");
@@ -172,7 +198,13 @@ document.addEventListener("DOMContentLoaded", () => {
   let fcFlipped = false;
 
   function setupFlashcards() {
-    const all = Storage.loadAll().filter((s) => s.en && s.ja);
+    const categoryFilter = fcCategoryFilter.value;
+    const all = Storage.loadAll().filter(
+      (s) =>
+        s.en &&
+        s.ja &&
+        (categoryFilter === "all" || (s.category || "other") === categoryFilter)
+    );
     fcCards = shuffle([...all]);
     fcIndex = 0;
     fcFlipped = false;
@@ -231,6 +263,8 @@ document.addEventListener("DOMContentLoaded", () => {
     fcIndex = 0;
     if (fcCards.length) renderCard();
   });
+
+  fcCategoryFilter.addEventListener("change", setupFlashcards);
 
   fcShuffleBtn.addEventListener("click", () => {
     fcCards = shuffle([...fcCards]);
