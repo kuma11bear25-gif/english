@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>マイ英語文章帳</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="app-header">
+  <h1>📘 マイ英語文章帳</h1>
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="add">追加</button>
+    <button class="tab-btn" data-tab="list">一覧</button>
+    <button class="tab-btn" data-tab="flashcard">フラッシュカード</button>
+  </nav>
+</header>
+
+<main>
+  <!-- 追加タブ -->
+  <section id="tab-add" class="tab-panel active">
+    <h2>英語文章を追加</h2>
+    <form id="add-form">
+      <label for="en-input">英語文章</label>
+      <textarea id="en-input" placeholder="例: I go to school every day." rows="3" required></textarea>
+
+      <label for="ja-input">日本語訳（自動翻訳されます。手動で編集も可能です）</label>
+      <textarea id="ja-input" placeholder="翻訳結果がここに表示されます" rows="3"></textarea>
+
+      <div class="button-row">
+        <button type="button" id="translate-btn">日本語に翻訳</button>
+        <button type="submit" id="save-btn">保存する</button>
+      </div>
+      <p id="add-status" class="status-msg"></p>
+    </form>
+  </section>
+
+  <!-- 一覧タブ -->
+  <section id="tab-list" class="tab-panel">
+    <h2>文章一覧</h2>
+    <p id="list-empty" class="empty-msg">まだ文章が登録されていません。</p>
+    <ul id="sentence-list" class="sentence-list"></ul>
+  </section>
+
+  <!-- フラッシュカードタブ -->
+  <section id="tab-flashcard" class="tab-panel">
+    <h2>フラッシュカード学習</h2>
+    <div class="fc-controls">
+      <label>
+        出題方向:
+        <select id="fc-mode">
+          <option value="en-ja">英語 → 日本語</option>
+          <option value="ja-en">日本語 → 英語</option>
+        </select>
+      </label>
+      <button id="fc-shuffle">シャッフル</button>
+    </div>
+
+    <p id="fc-empty" class="empty-msg">学習できる文章がありません。まずは文章を追加してください。</p>
+
+    <div id="fc-area" class="fc-area">
+      <p id="fc-progress" class="fc-progress"></p>
+      <div id="flashcard" class="flashcard">
+        <div class="flashcard-inner">
+          <p id="fc-text" class="fc-text"></p>
+        </div>
+      </div>
+      <div class="fc-actions">
+        <button id="fc-speak">🔊 読み上げ</button>
+        <button id="fc-flip">めくる</button>
+      </div>
+      <div class="fc-nav">
+        <button id="fc-prev">← 前へ</button>
+        <button id="fc-next">次へ →</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script src="js/storage.js"></script>
+<script src="js/translate.js"></script>
+<script src="js/speech.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
