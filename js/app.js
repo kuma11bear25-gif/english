@@ -1,4 +1,11 @@
 document.addEventListener("DOMContentLoaded", () => {
+  // ---- Service Worker登録（オフライン対応・ホーム画面追加用） ----
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("sw.js").catch((err) => {
+      console.error("Service Workerの登録に失敗しました", err);
+    });
+  }
+
   // ---- タブ切り替え ----
   const tabButtons = document.querySelectorAll(".tab-btn");
   const tabPanels = document.querySelectorAll(".tab-panel");
@@ -235,6 +242,43 @@ document.addEventListener("DOMContentLoaded", () => {
   fcFlipBtn.addEventListener("click", flipCard);
   fcNextBtn.addEventListener("click", goNext);
   fcPrevBtn.addEventListener("click", goPrev);
+
+  // ---- スワイプ操作（モバイル向け: 左右スワイプで前後移動） ----
+  let touchStartX = null;
+  let touchStartY = null;
+
+  flashcardEl.addEventListener(
+    "touchstart",
+    (e) => {
+      const t = e.changedTouches[0];
+      touchStartX = t.clientX;
+      touchStartY = t.clientY;
+    },
+    { passive: true }
+  );
+
+  flashcardEl.addEventListener(
+    "touchend",
+    (e) => {
+      if (touchStartX === null) return;
+      const t = e.changedTouches[0];
+      const dx = t.clientX - touchStartX;
+      const dy = t.clientY - touchStartY;
+      touchStartX = null;
+      touchStartY = null;
+
+      const SWIPE_THRESHOLD = 40;
+      if (Math.abs(dx) < SWIPE_THRESHOLD || Math.abs(dx) < Math.abs(dy)) {
+        return; // 小さい動きやタップはflipCardのclickに任せる
+      }
+      if (dx < 0) {
+        goNext();
+      } else {
+        goPrev();
+      }
+    },
+    { passive: true }
+  );
 
   fcSpeakBtn.addEventListener("click", () => {
     if (!fcCards.length) return;
